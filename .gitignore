@@ -1,0 +1,15 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# tests/build output
+/coverage
+/.next/
+/out/
+/build/
+
+# local files
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts.tmp

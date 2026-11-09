@@ -1,0 +1,27 @@
+{
+  "title": "Mauricio Molina — Portfolio & productos",
+  "brief": "Marca personal con capacidad de estudio. Portfolio editorial premium en primera persona para atraer dueños de negocios y oportunidades de ingeniería senior. Servicios, experiencia real del CV, Lymbo y espacio para futuros productos. Español, portugués e inglés.",
+  "artboards": [
+    {
+      "file": "01-editorial.html",
+      "title": "Editorial · criterio y claridad",
+      "tradeoff": "Clara y equilibrada: prioriza servicios y confianza; los productos aparecen como respaldo.",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "file": "02-product-studio.html",
+      "title": "Product studio · construir para demostrar",
+      "tradeoff": "Oscura y más expresiva: productos primero; la oferta de servicios requiere un poco más de recorrido.",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "file": "03-personal.html",
+      "title": "Personal · experiencia de cerca",
+      "tradeoff": "Cálida y personal, con navegación lateral en escritorio: refuerza al profesional antes que al catálogo.",
+      "width": 1440,
+      "height": 1100
+    }
+  ]
+}
