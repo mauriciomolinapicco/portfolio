@@ -6,9 +6,9 @@
       "status": "in_progress",
       "queued": false,
       "sentAt": "2026-11-09T03:28:52.089Z",
-      "startedAt": "2026-11-09T03:43:19.739Z",
+      "startedAt": "2026-11-09T04:07:23.781Z",
       "implementedAt": null,
-      "note": "Implementation runs; 11 tests, typecheck, writer production build and HTTP smoke passed. Independent isolated build failed due to scratch dependency resolution; browser verification unavailable. Completion pending human decision.",
+      "note": "Next.js app implemented. Independent isolated build now passes (exit 0, static pages 3/3), along with 11 tests, typecheck and HTTP smoke. Browser/visual/parallax runtime proof remains unavailable; not claiming full completion.",
       "previewUrl": "http://127.0.0.1:3000/"
     }
   }
