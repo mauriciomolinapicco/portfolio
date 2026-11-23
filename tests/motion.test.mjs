@@ -55,3 +55,12 @@ test('reduced motion disables every animation and reveals all content', () => {
 test('split words keep a real space between masked word boxes', () => {
   assert.match(component, /<span className=\{styles\.w\}>[\s\S]*?<\/span><\/span>\{' '\}/);
 });
+
+test('footer signature starts solid and delegates filling to bottom overscroll input', () => {
+  assert.match(component, /observeSignatureFill\(signature\)/);
+  assert.doesNotMatch(component, /signatureObserver/);
+  assert.match(css, /var\(--signature-fill,0%\)/);
+  assert.match(css, /linear-gradient\(var\(--line\),var\(--line\)\)/);
+  assert.doesNotMatch(css, /\.signature\{[^}]*animation-timeline/);
+  assert.ok(/\.signature\{[^}]*font:500 clamp\(40px,10vw,152px\)/.test(css));
+});

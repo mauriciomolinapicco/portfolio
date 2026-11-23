@@ -3,13 +3,14 @@
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
 import { chooseInitialLocale, persistLocale } from '../lib/locale.mjs';
 import { splitWords, revealDelay } from '../lib/motion.mjs';
+import { observeSignatureFill } from '../lib/signature.mjs';
 import { copy, experience, products, services, type Locale, locales } from '../lib/content';
 import styles from './portfolio.module.css';
 
 const languageOptions = [
-  { value: 'es', flag: '🇦🇷', name: 'Español' },
-  { value: 'pt', flag: '🇧🇷', name: 'Português' },
-  { value: 'en', flag: '🇬🇧', name: 'English' },
+  { value: 'es', name: 'Español' },
+  { value: 'pt', name: 'Português' },
+  { value: 'en', name: 'English' },
 ] as const;
 
 const companies = ['Delto', 'MercadoLibre', 'Rooster Software'];
@@ -50,7 +51,7 @@ export function Portfolio() {
 
   useEffect(() => {
     document.documentElement.lang = locale;
-    document.title = `Mauricio Molina — ${{ es: 'Software para tu negocio', pt: 'Software para seu negócio', en: 'Software for your business' }[locale]}`;
+    document.title = 'Mauricio Molina — Software Engineer';
   }, [locale]);
 
   // Scroll reveals: content is visible by default and only hidden once the observer is running.
@@ -68,6 +69,11 @@ export function Portfolio() {
     page.querySelectorAll('[data-reveal]').forEach(element => observer.observe(element));
     setMotionReady(true);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const signature = pageRef.current?.querySelector<HTMLElement>(`.${styles.signature}`);
+    if (signature) return observeSignatureFill(signature);
   }, []);
 
   function changeLocale(value: string) {
@@ -93,28 +99,32 @@ export function Portfolio() {
         <nav className={styles.nav} aria-label={text.locale}>
           <a href="#servicios"><Roll label={text.navServices} /></a><a href="#productos"><Roll label={text.navProducts} /></a><a href="#experiencia"><Roll label={text.navAbout} /></a>
         </nav>
-        <label className={styles.language}>
-          <span className={styles.srOnly}>{text.locale}</span>
-          <select aria-label={text.locale} value={locale} onChange={event => changeLocale(event.target.value)}>
-            {languageOptions.map(option => <option key={option.value} value={option.value}>{option.flag} {option.value.toUpperCase()} · {option.name}</option>)}
-          </select>
-        </label>
+        <div className={styles.language} role="group" aria-label={text.locale}>
+          {languageOptions.map(option => <button key={option.value} type="button" lang={option.value} aria-label={option.name} title={option.name} aria-pressed={locale === option.value} onClick={() => changeLocale(option.value)}>{option.value.toUpperCase()}</button>)}
+        </div>
       </header>
       <main id="contenido">
         <section className={styles.hero} aria-labelledby="hero-title" onPointerMove={moveSpotlight}>
           <div className={styles.spotlight} aria-hidden="true" />
-          <p className={styles.eyebrow}>{text.eyebrow}</p>
-          <h1 id="hero-title" key={locale}><SplitTitle title={text.headline} /></h1>
-          <div className={styles.heroBottom} key={`bottom-${locale}`}>
-            <div><p className={styles.intro}>{text.intro}</p><div className={styles.actions}>
-              <a className={styles.button} href="#contacto">{text.cta}<span aria-hidden="true">↗</span></a>
-              <a className={styles.textLink} href="#productos">{text.explore}</a>
-            </div></div>
-            <p className={styles.index}>
-              <span className={styles.srOnly}>{text.index}</span>
-              <span aria-hidden="true" className={styles.cycler}><span className={styles.cycleList}>{[...cycleWords, cycleWords[0]].map((word, index) => <span key={index}>{word}</span>)}</span></span>
-            </p>
+          <div className={styles.heroCopy}>
+            <p className={styles.eyebrow}>{text.eyebrow}</p>
+            <h1 id="hero-title" key={locale}><SplitTitle title={text.headline} /></h1>
+            <div className={styles.heroBottom} key={`bottom-${locale}`}>
+              <div><p className={styles.intro}>{text.intro}</p><div className={styles.actions}>
+                <a className={styles.button} href="#servicios">{text.cta}</a>
+                <a className={styles.textLink} href="#experiencia">{text.explore}</a>
+              </div></div>
+              <p className={styles.index}>
+                <span className={styles.srOnly}>{text.index}</span>
+                <span aria-hidden="true" className={styles.cycler}><span className={styles.cycleList}>{[...cycleWords, cycleWords[0]].map((word, index) => <span key={index}>{word}</span>)}</span></span>
+              </p>
+            </div>
           </div>
+          <figure className={styles.portrait}>
+            {/* Replace this placeholder with a personal portrait in public/. */}
+            <div className={styles.portraitFrame}><img src="/mauricio-portrait.svg" width="600" height="750" alt={text.portraitAlt} /><span>{text.portraitNote}</span></div>
+            <figcaption><span>Mauricio Molina</span><span>{text.portraitCaption}</span></figcaption>
+          </figure>
         </section>
         <div className={styles.proof}>
           <p className={styles.label}>{text.proof}</p>
@@ -126,36 +136,35 @@ export function Portfolio() {
             </div>)}</div>
           </div>
         </div>
-        <section className={styles.content} id="productos" aria-labelledby="products-title">
-          <div className={styles.sectionHead} data-reveal=""><p className={styles.label}>{text.productsLabel}</p><h2 id="products-title" key={locale}><SplitText text={text.productsTitle} /></h2></div>
-          {products.map(product => <article className={styles.product} key={product.name} data-reveal="wipe">
-            <div className={styles.productArt} aria-label={product.name} role="img">
-              <svg className={styles.badge} viewBox="0 0 100 100" aria-hidden="true">
-                <defs><path id={`badge-${product.name}`} d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs>
-                <text textLength="236" lengthAdjust="spacing"><textPath href={`#badge-${product.name}`}>{`${product.name} · ${product.category[locale]} · `.toUpperCase()}</textPath></text>
-              </svg>
-              <strong>{product.name}<span aria-hidden="true">.</span></strong><span>{product.category[locale].toUpperCase()}</span>
-            </div>
-            <div className={styles.projectCopy}><p className={styles.label}>{text.productType}</p><h3>{product.name}</h3><p>{text[product.descriptionKey]}</p><a className={styles.textLink} href="#contacto">{text.productCta} <span aria-hidden="true">↗</span></a></div>
-          </article>)}
-          <div className={styles.next} data-reveal=""><span>{text.more}</span><span>{text.moreSub}</span></div>
-        </section>
         <section className={styles.content} id="servicios" aria-labelledby="services-title">
           <div className={styles.sectionHead} data-reveal=""><p className={styles.label}>{text.servicesLabel}</p><h2 id="services-title" key={locale}><SplitText text={text.servicesTitle} /></h2></div>
           <div className={styles.services}>{services.map((number, index) => <article className={styles.service} key={number} data-reveal="" style={delay(index)}>
             <span className={styles.num}>{String(number).padStart(2, '0')}</span><h3>{text[`service${number}`]}</h3><p>{text[`detail${number}`]}</p>
           </article>)}</div>
         </section>
+        <section className={styles.content} id="productos" aria-labelledby="products-title">
+          <div className={styles.sectionHead} data-reveal=""><p className={styles.label}>{text.productsLabel}</p><h2 id="products-title" key={locale}><SplitText text={text.productsTitle} /></h2></div>
+          {products.map(product => <article className={styles.product} key={product.name} data-reveal="wipe">
+            <a className={styles.productArt} href="https://lymbo.app" target="_blank" rel="noreferrer" aria-label={`${text.productCta} — ${product.name}`}>
+              <svg className={styles.badge} viewBox="0 0 100 100" aria-hidden="true">
+                <defs><path id={`badge-${product.name}`} d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs>
+                <text textLength="236" lengthAdjust="spacing"><textPath href={`#badge-${product.name}`}>{`${product.name} · ${product.category[locale]} · `.toUpperCase()}</textPath></text>
+              </svg>
+              <strong>{product.name}<span aria-hidden="true">.</span></strong><span>{product.category[locale].toUpperCase()}</span>
+            </a>
+            <div className={styles.projectCopy}><p className={styles.label}>{text.productType}</p><h3>{product.name}</h3><p>{text[product.descriptionKey]}</p><a className={styles.textLink} href="https://lymbo.app" target="_blank" rel="noreferrer">{text.productCta}</a></div>
+          </article>)}
+        </section>
         <section className={styles.content} id="experiencia" aria-labelledby="experience-title">
           <div className={styles.sectionHead} data-reveal=""><p className={styles.label}>{text.aboutLabel}</p><h2 id="experience-title" key={locale}><SplitText text={text.aboutTitle} /></h2></div>
-          <div className={styles.experienceLayout}><div data-reveal=""><div className={styles.bio}><p>{text.bio}</p><p>{text.bio2}</p></div><p className={styles.tech}>Python / FastAPI / Django / React<br />AWS / GCP / Azure / Docker</p></div>
+          <div className={styles.experienceLayout}><div data-reveal=""><div className={styles.bio}><p>{text.bio}</p><p>{text.bio2}</p></div><p className={styles.tech}>Python / FastAPI / Django / React<br />AWS / GCP / Azure / Docker</p><a className={styles.textLink} href="/cv-mauricio-molina.pdf" download>{text.downloadCv} <span aria-hidden="true">↓</span></a></div>
             <div className={styles.jobs}>{experience.map((job, index) => <article className={styles.job} key={job.company} data-reveal="" style={delay(index + 1)}><div><h3>{job.company}</h3><p>{text[job.roleKey]}</p></div><span>{job.period}{job.current && text.present}</span></article>)}<p className={styles.variantNote}>{text.cv}</p></div>
           </div>
         </section>
         <section className={styles.contact} id="contacto" aria-labelledby="contact-title">
           <p className={styles.label}>{text.contactLabel}</p><div data-reveal=""><h2 id="contact-title" key={locale}><SplitTitle title={text.contactTitle} /></h2></div>
           <div className={styles.contactBody} data-reveal="" style={delay(3)}>
-            <p>{text.contactBody}</p><a className={styles.button} href="tel:+543571690426">{text.contactCta}<span aria-hidden="true">↗</span></a>
+            <p>{text.contactBody}</p><a className={styles.button} href="tel:+543571690426">{text.contactCta}</a>
             <a className={styles.phone} href="tel:+543571690426">+54 3571 690426</a>
             <div className={styles.socials}><a href="https://github.com/mauriciomolinapicco" target="_blank" rel="noreferrer">GitHub · mauriciomolinapicco</a><a href="https://www.linkedin.com/in/mauricio-molina-picco/" target="_blank" rel="noreferrer">LinkedIn · mauricio-molina-picco</a></div>
           </div>
